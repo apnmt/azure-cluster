@@ -27,10 +27,10 @@ resource "azurerm_app_service" "appservice" {
     number_of_workers      = var.max_size
     scm_type               = "LocalGit"
   }
-  app_settings        = {
+  app_settings = merge({
     SPRING_DATA_MONGODB_URI      = azurerm_cosmosdb_account.account.connection_strings.0
     SPRING_DATA_MONGODB_DATABASE = azurerm_cosmosdb_mongo_database.database.name
-  }
+  }, var.environment_variables)
 }
 
 # deploy the application from blob storage

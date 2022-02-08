@@ -22,3 +22,7 @@ variable "max_size" {
   type    = number
   default = 2
 }
+variable "environment_variables" {
+  type        = map(string)
+  description = "Environment Variables"
+}

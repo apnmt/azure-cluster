@@ -1,12 +1,16 @@
 module "appointmentservice-application" {
   source = "./modules/app-service-postgres-application"
 
-  application_name = "appointmentservice"
-  location = var.location
-  resource_group = azurerm_resource_group.rg.name
-  tier = "Basic"
-  tier_size = "B1"
-  postgres_sku_name = "B_Gen5_1"
+  application_name      = "appointmentservice"
+  location              = var.location
+  resource_group        = azurerm_resource_group.rg.name
+  tier                  = "Basic"
+  tier_size             = "B1"
+  postgres_sku_name     = "B_Gen5_1"
+  environment_variables = {
+    SPRING_JMS_SERVICEBUS_CONNECTIONSTRING = azurerm_servicebus_namespace.namespace.default_primary_connection_string
+    SPRING_JMS_SERVICEBUS_PRICINGTIER      = lower(azurerm_servicebus_namespace.namespace.sku)
+  }
 }
 
 #################

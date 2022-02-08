@@ -27,12 +27,11 @@ resource "azurerm_app_service" "appservice" {
     number_of_workers = var.max_size
     scm_type                 = "LocalGit"
   }
-  app_settings = {
-
-    SPRING_DATASOURCE_URL = "jdbc:postgresql://${azurerm_postgresql_server.postgresql-server.fqdn}:5432/${azurerm_postgresql_database.postgresql-db.name}?user=${azurerm_postgresql_server.postgresql-server.administrator_login}@${azurerm_postgresql_server.postgresql-server.name}&password=${azurerm_postgresql_server.postgresql-server.administrator_login_password}&sslmode=require"
+  app_settings = merge({
+    SPRING_DATASOURCE_URL      = "jdbc:postgresql://${azurerm_postgresql_server.postgresql-server.fqdn}:5432/${azurerm_postgresql_database.postgresql-db.name}?user=${azurerm_postgresql_server.postgresql-server.administrator_login}@${azurerm_postgresql_server.postgresql-server.name}&password=${azurerm_postgresql_server.postgresql-server.administrator_login_password}&sslmode=require"
     SPRING_DATASOURCE_USERNAME = azurerm_postgresql_server.postgresql-server.administrator_login
     SPRING_DATASOURCE_PASSWORD = azurerm_postgresql_server.postgresql-server.administrator_login_password
-  }
+  }, var.environment_variables)
 }
 
 # deploy the application from blob storage
