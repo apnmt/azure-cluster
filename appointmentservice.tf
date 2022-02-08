@@ -23,7 +23,7 @@ resource "azurerm_api_management_api" "appointment-api" {
   service_url = "https://${module.appointmentservice-application.app_service_endpoint_url}"
 }
 
-resource "azurerm_api_management_api_operation" "services" {
+resource "azurerm_api_management_api_operation" "appointmentservice-get-services" {
   operation_id        = "services-get"
   api_name            = azurerm_api_management_api.appointment-api.name
   api_management_name = azurerm_api_management.apim.name

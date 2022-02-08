@@ -32,6 +32,6 @@ resource "azurerm_postgresql_firewall_rule" "firewall" {
   name                = "${var.application_name}-firewall"
   resource_group_name = var.resource_group
   server_name         = azurerm_postgresql_server.postgresql-server.name
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+  start_ip_address    = azurerm_app_service.appservice.outbound_ip_address_list.0
+  end_ip_address      = element(azurerm_app_service.appservice.outbound_ip_address_list, length(azurerm_app_service.appservice.outbound_ip_address_list)-1)
 }
