@@ -8,8 +8,9 @@ module "organizationservice-application" {
   tier_size             = "B1"
   postgres_sku_name     = "B_Gen5_1"
   environment_variables = {
-    SPRING_JMS_SERVICEBUS_CONNECTIONSTRING = azurerm_servicebus_namespace.namespace.default_primary_connection_string
-    SPRING_JMS_SERVICEBUS_PRICINGTIER      = lower(azurerm_servicebus_namespace.namespace.sku)
+    SPRING_JMS_SERVICEBUS_CONNECTIONSTRING        = azurerm_servicebus_namespace.namespace.default_primary_connection_string
+    SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
+    AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.organizationservice-insights.instrumentation_key
   }
 }
 
@@ -81,4 +82,15 @@ resource "azurerm_servicebus_subscription" "org-organization-activation-changed-
   name               = "org-organization-activation-changed-subscription"
   topic_id           = azurerm_servicebus_topic.organization-activation-changed.id
   max_delivery_count = 3
+}
+
+#########################
+# Application insights
+#########################
+resource "azurerm_application_insights" "organizationservice-insights" {
+  name                = "organization-insights"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  workspace_id        = azurerm_log_analytics_workspace.workspace.id
+  application_type    = "java"
 }

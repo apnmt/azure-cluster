@@ -7,9 +7,10 @@ module "organizationappointmentservice-application" {
   tier                  = "Basic"
   tier_size             = "B1"
   environment_variables = {
-    SPRING_JMS_SERVICEBUS_CONNECTIONSTRING = azurerm_servicebus_namespace.namespace.default_primary_connection_string
-    SPRING_JMS_SERVICEBUS_PRICINGTIER      = lower(azurerm_servicebus_namespace.namespace.sku)
-    SPRING_JMS_SERVICEBUS_TOPICCLIENTID    = azurerm_servicebus_topic.appointment-changed.name
+    SPRING_JMS_SERVICEBUS_CONNECTIONSTRING        = azurerm_servicebus_namespace.namespace.default_primary_connection_string
+    SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
+    SPRING_JMS_SERVICEBUS_TOPICCLIENTID           = azurerm_servicebus_topic.appointment-changed.name
+    AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.organizationappointmentservice-insights.instrumentation_key
   }
 }
 
@@ -105,4 +106,15 @@ resource "azurerm_servicebus_subscription" "orgapnmt-working-hour-changed-subscr
   name               = "orgapnmt-working-hour-changed-subscription"
   topic_id           = azurerm_servicebus_topic.working-hour-changed.id
   max_delivery_count = 3
+}
+
+#########################
+# Application insights
+#########################
+resource "azurerm_application_insights" "organizationappointmentservice-insights" {
+  name                = "organizationappointment-insights"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  workspace_id        = azurerm_log_analytics_workspace.workspace.id
+  application_type    = "java"
 }
