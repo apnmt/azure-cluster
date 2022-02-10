@@ -40,3 +40,36 @@ resource "azurerm_api_management_api_operation" "appointmentservice-get-services
     status_code = 200
   }
 }
+
+resource "azurerm_api_management_api_operation_policy" "appointmentservice-get-services-policy" {
+  api_name            = azurerm_api_management_api_operation.appointmentservice-get-services.api_name
+  api_management_name = azurerm_api_management_api_operation.appointmentservice-get-services.api_management_name
+  resource_group_name = azurerm_api_management_api_operation.appointmentservice-get-services.resource_group_name
+  operation_id        = azurerm_api_management_api_operation.appointmentservice-get-services.operation_id
+
+  xml_content = <<XML
+<policies>
+    <inbound>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+            <openid-config url="${var.open-id-url}" />
+            <audiences>
+                <audience>${var.client-id}</audience>
+            </audiences>
+            <issuers>
+                <issuer>${var.issuer}</issuer>
+            </issuers>
+        </validate-jwt>
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+XML
+}
