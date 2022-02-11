@@ -22,7 +22,7 @@ resource "azurerm_app_service" "appservice" {
     java_container         = "JAVA"
     java_container_version = "11"
     linux_fx_version       = "JAVA|11-java11"
-    app_command_line       = "java -jar /home/site/wwwroot/app.jar --server.port=80"
+    app_command_line       = "java -javaagent:/home/site/wwwroot/applicationinsights-agent.jar -jar /home/site/wwwroot/${var.application_name}.jar --server.port=80"
     health_check_path      = "/management/health/liveness"
     number_of_workers      = var.max_size
     scm_type               = "LocalGit"
@@ -37,7 +37,7 @@ resource "azurerm_app_service" "appservice" {
 resource "null_resource" "deploy-application" {
   provisioner "local-exec" {
     command = <<EOF
-    curl -X POST -u '${azurerm_app_service.appservice.site_credential.0.username}:${azurerm_app_service.appservice.site_credential.0.password}' "https://${azurerm_app_service.appservice.name}.scm.azurewebsites.net/api/publish?type=jar" -d '{"packageUri": "https://apnmt.blob.core.windows.net/apnmt-applications/${var.application_name}.jar?sp=r&st=2022-02-07T15:48:47Z&se=2022-07-29T22:48:47Z&spr=https&sv=2020-08-04&sr=c&sig=taNF7%2Bebo9LLaWVpv%2B5M1s4KD4nBgqFCGhuMKl3rS6I%3D"}' -H "Content-Type: application/json"
+    curl -X POST -u '${azurerm_app_service.appservice.site_credential.0.username}:${azurerm_app_service.appservice.site_credential.0.password}' "https://${azurerm_app_service.appservice.name}.scm.azurewebsites.net/api/publish?type=zip" -d '{"packageUri": "https://apnmt.blob.core.windows.net/apnmt-applications/${var.application_name}.zip?sp=r&st=2022-02-07T15:48:47Z&se=2022-07-29T22:48:47Z&spr=https&sv=2020-08-04&sr=c&sig=taNF7%2Bebo9LLaWVpv%2B5M1s4KD4nBgqFCGhuMKl3rS6I%3D"}' -H "Content-Type: application/json"
     EOF
   }
 }

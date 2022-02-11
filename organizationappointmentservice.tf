@@ -11,6 +11,7 @@ module "organizationappointmentservice-application" {
     SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
     SPRING_JMS_SERVICEBUS_TOPICCLIENTID           = azurerm_servicebus_topic.appointment-changed.name
     AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.organizationappointmentservice-insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING         = azurerm_application_insights.organizationappointmentservice-insights.connection_string
   }
 }
 

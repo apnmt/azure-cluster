@@ -11,6 +11,7 @@ module "appointmentservice-application" {
     SPRING_JMS_SERVICEBUS_CONNECTIONSTRING        = azurerm_servicebus_namespace.namespace.default_primary_connection_string
     SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
     AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appointmentservice-insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING         = azurerm_application_insights.appointmentservice-insights.connection_string
   }
 }
 
