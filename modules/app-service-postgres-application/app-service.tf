@@ -26,6 +26,13 @@ resource "azurerm_app_service" "appservice" {
     health_check_path      = "/management/health/liveness"
     number_of_workers      = var.max_size
     scm_type               = "LocalGit"
+
+    dynamic "ip_restriction" {
+      for_each = var.apim_ip_addresses
+      content {
+        ip_address = ip_restriction.value
+      }
+    }
   }
   app_settings = merge({
     SPRING_DATASOURCE_URL      = "jdbc:postgresql://${azurerm_postgresql_server.postgresql-server.fqdn}:5432/${azurerm_postgresql_database.postgresql-db.name}?user=${azurerm_postgresql_server.postgresql-server.administrator_login}@${azurerm_postgresql_server.postgresql-server.name}&password=${azurerm_postgresql_server.postgresql-server.administrator_login_password}&sslmode=require"

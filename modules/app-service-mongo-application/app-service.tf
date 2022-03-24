@@ -26,6 +26,14 @@ resource "azurerm_app_service" "appservice" {
     health_check_path      = "/management/health/liveness"
     number_of_workers      = var.max_size
     scm_type               = "LocalGit"
+
+
+    dynamic "ip_restriction" {
+      for_each = var.apim_ip_addresses
+      content {
+        ip_address = ip_restriction.value
+      }
+    }
   }
   app_settings = merge({
     SPRING_DATA_MONGODB_URI      = azurerm_cosmosdb_account.account.connection_strings.0

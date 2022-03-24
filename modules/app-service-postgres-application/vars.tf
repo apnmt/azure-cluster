@@ -43,3 +43,7 @@ variable "environment_variables" {
   type        = map(string)
   description = "Environment Variables"
 }
+variable "apim_ip_addresses" {
+  type        = list(string)
+  description = "The Ip Addresses of the APIM."
+}
