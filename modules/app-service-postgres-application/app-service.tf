@@ -42,3 +42,55 @@ resource "null_resource" "deploy-application" {
     EOF
   }
 }
+
+# Configure auto scaling
+resource "azurerm_monitor_autoscale_setting" "example" {
+  name                = "myAutoscaleSetting"
+  resource_group_name = var.resource_group
+  location            = var.location
+  target_resource_id  = azurerm_app_service_plan.plan.id
+  profile {
+    name = "default"
+    capacity {
+      default = var.min_size
+      minimum = var.min_size
+      maximum = var.max_size
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = var.cpu_greater_threshold
+      }
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_app_service_plan.plan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = var.cpu_less_threshold
+      }
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+  }
+}

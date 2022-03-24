@@ -20,12 +20,24 @@ variable "tier_size" {
 }
 variable "postgres_sku_name" {
   type        = string
-  default = "B_Gen5_1"
+  default     = "B_Gen5_1"
   description = "Sku name for Postgres Server"
+}
+variable "min_size" {
+  type    = number
+  default = 1
 }
 variable "max_size" {
   type    = number
   default = 2
+}
+variable "cpu_less_threshold" {
+  type    = number
+  default = 10
+}
+variable "cpu_greater_threshold" {
+  type    = number
+  default = 50
 }
 variable "environment_variables" {
   type        = map(string)
