@@ -4,8 +4,9 @@ module "organizationappointmentservice-application" {
   application_name      = "organizationappointmentservice"
   location              = var.location
   resource_group        = azurerm_resource_group.rg.name
-  tier                  = "Basic"
-  tier_size             = "B1"
+  tier                  = "Standard"
+  tier_size             = "S1"
+  apim_ip_addresses     = azurerm_api_management.apim.public_ip_addresses
   environment_variables = {
     SPRING_JMS_SERVICEBUS_CONNECTIONSTRING        = azurerm_servicebus_namespace.namespace.default_primary_connection_string
     SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
