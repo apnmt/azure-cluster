@@ -30,12 +30,12 @@ resource "azurerm_app_service" "appservice" {
     dynamic "ip_restriction" {
       for_each = var.apim_ip_addresses
       content {
-        ip_address = ip_restriction.value
+        ip_address = "${ip_restriction.value}/24"
       }
     }
   }
   app_settings = merge({
-    SPRING_DATASOURCE_URL      = "jdbc:postgresql://${azurerm_postgresql_server.postgresql-server.fqdn}:5432/${azurerm_postgresql_database.postgresql-db.name}?user=${azurerm_postgresql_server.postgresql-server.administrator_login}@${azurerm_postgresql_server.postgresql-server.name}&password=${azurerm_postgresql_server.postgresql-server.administrator_login_password}&sslmode=require"
+    SPRING_DATASOURCE_URL      = "jdbc:postgresql://${azurerm_postgresql_server.postgresql-server.fqdn}:5432/${azurerm_postgresql_database.postgresql-db.name}?user=${azurerm_postgresql_server.postgresql-server.administrator_login}@${azurerm_postgresql_server.postgresql-server.name}&password=${azurerm_postgresql_server.postgresql-server.administrator_login_password}&sslmode=require&stringtype=unspecified"
     SPRING_DATASOURCE_USERNAME = azurerm_postgresql_server.postgresql-server.administrator_login
     SPRING_DATASOURCE_PASSWORD = azurerm_postgresql_server.postgresql-server.administrator_login_password
   }, var.environment_variables)
@@ -51,8 +51,8 @@ resource "null_resource" "deploy-application" {
 }
 
 # Configure auto scaling
-resource "azurerm_monitor_autoscale_setting" "example" {
-  name                = "myAutoscaleSetting"
+resource "azurerm_monitor_autoscale_setting" "autoscale_setting" {
+  name                = "apnmt-${var.application_name}-autoscale-setting"
   resource_group_name = var.resource_group
   location            = var.location
   target_resource_id  = azurerm_app_service_plan.plan.id
