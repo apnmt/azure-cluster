@@ -44,5 +44,7 @@ resource "azurerm_cosmosdb_mongo_database" "database" {
   name                = "${var.application_name}-cosmos-mongo-db"
   resource_group_name = var.resource_group
   account_name        = azurerm_cosmosdb_account.account.name
-  throughput          = 400
+  autoscale_settings {
+    max_throughput = 4000
+  }
 }
