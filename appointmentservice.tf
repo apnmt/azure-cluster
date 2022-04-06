@@ -546,6 +546,116 @@ resource "azurerm_api_management_api_operation_policy" "appointmentservice-delet
 XML
 }
 
+resource "azurerm_api_management_api_operation" "appointments-delete" {
+  operation_id        = "appointments-delete"
+  api_name            = azurerm_api_management_api.appointment-api.name
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_resource_group.rg.name
+  display_name        = "DELETE Appointments"
+  method              = "DELETE"
+  url_template        = "/api/appointments"
+
+  response {
+    status_code = 200
+  }
+}
+
+resource "azurerm_api_management_api_operation_policy" "appointments-delete-policy" {
+  api_name            = azurerm_api_management_api_operation.appointments-delete.api_name
+  api_management_name = azurerm_api_management_api_operation.appointments-delete.api_management_name
+  resource_group_name = azurerm_api_management_api_operation.appointments-delete.resource_group_name
+  operation_id        = azurerm_api_management_api_operation.appointments-delete.operation_id
+
+  xml_content = <<XML
+<policies>
+    <inbound>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+            <openid-config url="${var.open-id-url}" />
+            <audiences>
+                <audience>${var.client-id}</audience>
+            </audiences>
+            <issuers>
+                <issuer>${var.issuer}</issuer>
+            </issuers>
+            <required-claims>
+                <claim name="groups" match="any" separator=";">
+                    <value>admin</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <set-header name="X-User-Name" exists-action="override">
+           <value>@(context.Request.Headers["Authorization"].First().Split(' ')[1].AsJwt()?.Claims["name"].FirstOrDefault())</value>
+        </set-header>
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+XML
+}
+
+resource "azurerm_api_management_api_operation" "appointmentservice-delete-customers" {
+  operation_id        = "delete-customers"
+  api_name            = azurerm_api_management_api.appointment-api.name
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_resource_group.rg.name
+  display_name        = "DELETE Customers"
+  method              = "DELETE"
+  url_template        = "/api/customers"
+
+  response {
+    status_code = 201
+  }
+}
+
+resource "azurerm_api_management_api_operation_policy" "appointmentservice-delete-customers-policy" {
+  api_name            = azurerm_api_management_api_operation.appointmentservice-delete-customers.api_name
+  api_management_name = azurerm_api_management_api_operation.appointmentservice-delete-customers.api_management_name
+  resource_group_name = azurerm_api_management_api_operation.appointmentservice-delete-customers.resource_group_name
+  operation_id        = azurerm_api_management_api_operation.appointmentservice-delete-customers.operation_id
+
+  xml_content = <<XML
+<policies>
+    <inbound>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+            <openid-config url="${var.open-id-url}" />
+            <audiences>
+                <audience>${var.client-id}</audience>
+            </audiences>
+            <issuers>
+                <issuer>${var.issuer}</issuer>
+            </issuers>
+            <required-claims>
+                <claim name="groups" match="any" separator=";">
+                    <value>admin</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <set-header name="X-User-Name" exists-action="override">
+           <value>@(context.Request.Headers["Authorization"].First().Split(' ')[1].AsJwt()?.Claims["name"].FirstOrDefault())</value>
+        </set-header>
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+XML
+}
+
 #########################
 # Application insights
 #########################
