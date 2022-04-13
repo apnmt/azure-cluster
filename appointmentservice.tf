@@ -11,8 +11,8 @@ module "appointmentservice-application" {
   environment_variables = {
     SPRING_JMS_SERVICEBUS_CONNECTIONSTRING        = azurerm_servicebus_namespace.namespace.default_primary_connection_string
     SPRING_JMS_SERVICEBUS_PRICINGTIER             = lower(azurerm_servicebus_namespace.namespace.sku)
-    AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.appointmentservice-insights.instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING         = azurerm_application_insights.appointmentservice-insights.connection_string
+    AZURE_APPLICATIONSINSIGHTS_INSTRUMENTATIONKEY = data.azurerm_application_insights.appointmentservice-insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING         = data.azurerm_application_insights.appointmentservice-insights.connection_string
   }
 }
 
@@ -714,10 +714,7 @@ XML
 #########################
 # Application insights
 #########################
-resource "azurerm_application_insights" "appointmentservice-insights" {
+data "azurerm_application_insights" "appointmentservice-insights" {
   name                = "appointment-insights"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-  workspace_id        = azurerm_log_analytics_workspace.workspace.id
-  application_type    = "java"
+  resource_group_name = "apnmt_applications"
 }
