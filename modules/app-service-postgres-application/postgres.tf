@@ -29,7 +29,7 @@ resource "azurerm_postgresql_database" "postgresql-db" {
 
 # enable access from all azure services
 resource "azurerm_postgresql_firewall_rule" "firewall" {
-  count               = length(azurerm_app_service.appservice.outbound_ip_address_list)
+  count               = 5
   name                = "${var.application_name}-firewall-${count.index}"
   resource_group_name = var.resource_group
   server_name         = azurerm_postgresql_server.postgresql-server.name
