@@ -77,8 +77,8 @@ resource "azurerm_api_management_api_operation" "appointments-put" {
   }
 }
 
-resource "azurerm_api_management_api_operation" "appointments-delete" {
-  operation_id        = "appointments-delete"
+resource "azurerm_api_management_api_operation" "appointment-delete" {
+  operation_id        = "appointment-delete"
   api_name            = azurerm_api_management_api.appointment-api.name
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = azurerm_resource_group.rg.name
@@ -620,6 +620,61 @@ resource "azurerm_api_management_api_operation_policy" "appointmentservice-delet
   api_management_name = azurerm_api_management_api_operation.appointmentservice-delete-customers.api_management_name
   resource_group_name = azurerm_api_management_api_operation.appointmentservice-delete-customers.resource_group_name
   operation_id        = azurerm_api_management_api_operation.appointmentservice-delete-customers.operation_id
+
+  xml_content = <<XML
+<policies>
+    <inbound>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+            <openid-config url="${var.open-id-url}" />
+            <audiences>
+                <audience>${var.client-id}</audience>
+            </audiences>
+            <issuers>
+                <issuer>${var.issuer}</issuer>
+            </issuers>
+            <required-claims>
+                <claim name="groups" match="any" separator=";">
+                    <value>admin</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <set-header name="X-User-Name" exists-action="override">
+           <value>@(context.Request.Headers["Authorization"].First().Split(' ')[1].AsJwt()?.Claims["name"].FirstOrDefault())</value>
+        </set-header>
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+XML
+}
+
+resource "azurerm_api_management_api_operation" "appointmentservice-delete-services" {
+  operation_id        = "delete-services"
+  api_name            = azurerm_api_management_api.appointment-api.name
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_resource_group.rg.name
+  display_name        = "DELETE Services"
+  method              = "DELETE"
+  url_template        = "/api/services"
+
+  response {
+    status_code = 201
+  }
+}
+
+resource "azurerm_api_management_api_operation_policy" "appointmentservice-delete-services-policy" {
+  api_name            = azurerm_api_management_api_operation.appointmentservice-delete-services.api_name
+  api_management_name = azurerm_api_management_api_operation.appointmentservice-delete-services.api_management_name
+  resource_group_name = azurerm_api_management_api_operation.appointmentservice-delete-services.resource_group_name
+  operation_id        = azurerm_api_management_api_operation.appointmentservice-delete-services.operation_id
 
   xml_content = <<XML
 <policies>
