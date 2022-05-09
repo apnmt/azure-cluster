@@ -1,6 +1,6 @@
 resource "azurerm_cosmosdb_account" "account" {
   name                = "${var.application_name}-cosmos-db"
-  location            = var.location
+  location            = "northeurope"
   resource_group_name = var.resource_group
   offer_type          = "Standard"
   kind                = "MongoDB"
@@ -28,6 +28,10 @@ resource "azurerm_cosmosdb_account" "account" {
     name = "EnableMongo"
   }
 
+  capabilities {
+    name = "DisableRateLimitingResponses"
+  }
+
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 300
@@ -35,7 +39,7 @@ resource "azurerm_cosmosdb_account" "account" {
   }
 
   geo_location {
-    location          = var.location
+    location          = "northeurope"
     failover_priority = 0
   }
 }
@@ -44,7 +48,5 @@ resource "azurerm_cosmosdb_mongo_database" "database" {
   name                = "${var.application_name}-cosmos-mongo-db"
   resource_group_name = var.resource_group
   account_name        = azurerm_cosmosdb_account.account.name
-  autoscale_settings {
-    max_throughput = 4000
-  }
+  throughput          = 8000
 }

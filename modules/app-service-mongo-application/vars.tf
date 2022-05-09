@@ -24,15 +24,15 @@ variable "min_size" {
 }
 variable "max_size" {
   type    = number
-  default = 2
+  default = 3
 }
 variable "cpu_less_threshold" {
   type    = number
-  default = 10
+  default = 20
 }
 variable "cpu_greater_threshold" {
   type    = number
-  default = 50
+  default = 80
 }
 variable "environment_variables" {
   type        = map(string)

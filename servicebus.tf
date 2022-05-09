@@ -2,7 +2,8 @@ resource "azurerm_servicebus_namespace" "namespace" {
   name                = "apnmt-servicebus"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
-  sku                 = "Standard"
+  sku                 = "Premium"
+  capacity            = 1
 }
 
 resource "azurerm_servicebus_topic" "appointment-changed" {

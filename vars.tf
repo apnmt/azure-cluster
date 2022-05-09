@@ -9,7 +9,7 @@ variable "client-id" {
 }
 
 variable "open-id-url" {
-  default     = "https://apntmb2c.b2clogin.com/apntmb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_signupsignin"
+  default     = "https://apntmb2c.b2clogin.com/apntmb2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_SIGNUP_SIGNIN"
   description = "Azure APIM Open Id Url"
 }
 
